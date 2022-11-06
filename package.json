@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@logseq/libs": "^0.0.10",
+    "date-fns": "^2.29.3",
     "logseq-l10n": "^0.2.0"
   },
   "devDependencies": {
