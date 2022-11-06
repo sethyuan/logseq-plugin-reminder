@@ -7,16 +7,24 @@ async function main() {
 
   logseq.useSettingsSchema([
     {
-      key: "name1",
+      key: "defaultTime",
       type: "string",
-      default: "",
-      description: t("Name of the property containing a date as value."),
+      default: "09:00",
+      description: t(
+        "The default time (in 24 hours format) for notification when only a date is given.",
+      ),
     },
   ])
 
-  logseq.beforeunload(() => {
-    // TODO
+  const worker = new Worker(new URL("worker.js", import.meta.url), {
+    type: "module",
   })
+
+  logseq.beforeunload(() => {
+    worker.terminate()
+  })
+
+  // TODO: listen for transactions.
 
   console.log("#reminder loaded")
 }
