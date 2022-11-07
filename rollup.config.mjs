@@ -4,7 +4,6 @@ import html from "@rollup/plugin-html"
 import json from "@rollup/plugin-json"
 import { nodeResolve } from "@rollup/plugin-node-resolve"
 import replace from "@rollup/plugin-replace"
-import omt from "@surma/rollup-plugin-off-main-thread"
 import { readFile } from "fs/promises"
 import { defineRollupSwcOption, swc } from "rollup-plugin-swc3"
 
@@ -53,7 +52,6 @@ export default {
         },
       }),
     ),
-    omt(),
     replace({
       preventAssignment: true,
       values: {

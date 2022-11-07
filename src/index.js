@@ -1,29 +1,27 @@
 import "@logseq/libs"
 import { format } from "date-fns"
-import { setup, t } from "logseq-l10n"
+import { setup } from "logseq-l10n"
 import zhCN from "./translations/zh-CN.json"
+import { handleReminder, off } from "./worker"
 
 async function main() {
   await setup({ builtinTranslations: { "zh-CN": zhCN } })
 
-  logseq.useSettingsSchema([
-    {
-      key: "defaultTime",
-      type: "string",
-      default: "09:00",
-      description: t(
-        "The default time (in 24 hours format) for notification when only a date is given.",
-      ),
-    },
-  ])
-
-  const worker = new Worker(new URL("worker.js", import.meta.url), {
-    type: "module",
-  })
+  // NOTE: Not sure if this default time is a good idea.
+  // logseq.useSettingsSchema([
+  //   {
+  //     key: "defaultTime",
+  //     type: "string",
+  //     default: "09:00",
+  //     description: t(
+  //       "The default time (in 24 hours format) for notification when only a date is given.",
+  //     ),
+  //   },
+  // ])
 
   const futureReminders = await fetchFutureReminders()
   for (const reminder of futureReminders) {
-    worker.postMessage({ id: reminder.id, contentNew: reminder.content })
+    await handleReminder(reminder.id, null, reminder.content)
   }
 
   const cache = new Map()
@@ -58,7 +56,7 @@ async function main() {
 
     for (const [id, { check, contentOld, contentNew }] of cache.entries()) {
       if (check && (contentOld || contentNew)) {
-        worker.postMessage({ id, contentOld, contentNew })
+        handleReminder(id, contentOld, contentNew)
       }
     }
 
@@ -66,8 +64,8 @@ async function main() {
   })
 
   logseq.beforeunload(() => {
+    off()
     dbOff()
-    worker.terminate()
   })
 
   console.log("#reminder loaded")
@@ -81,7 +79,7 @@ async function fetchFutureReminders() {
         :in $ ?now
         :where
         (or [?b :block/scheduled ?d] [?b :block/deadline ?d])
-        [(>= ?d ?now)]]`,
+        (or [?b :block/repeated? true] [(>= ?d ?now)])]`,
         format(new Date(), "yyyyMMdd"),
       )
     ).flat()
