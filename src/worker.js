@@ -1,6 +1,7 @@
 import {
   addDays,
   addHours,
+  addMinutes,
   addMonths,
   addWeeks,
   addYears,
@@ -41,6 +42,8 @@ let timer = null
 let eid = null
 let time = null
 let intervalTimer = null
+let lastItem = null
+let lastID = null
 
 export async function handleReminder(id, contentOld, contentNew) {
   const [dtOld, repeatOld] = parseDate(contentOld)
@@ -86,17 +89,19 @@ export function off() {
 
 function scheduleNext() {
   let item = reminders.get(dates.peek())
+  let scheduled = dates.peekPriority()
   while (
     (item == null ||
-      (item.dt.getTime() !== dates.peekPriority() &&
-        nextTime(item.dt, item.repeat) !== dates.peekPriority())) &&
+      (item.remindIn?.getTime() !== scheduled &&
+        item.dt.getTime() !== scheduled &&
+        nextTime(item.dt, item.repeat) !== scheduled)) &&
     dates.length > 0
   ) {
     dates.pop()
     item = reminders.get(dates.peek())
+    scheduled = dates.peekPriority()
   }
   const id = dates.peek()
-  const scheduled = dates.peekPriority()
   const now = Date.now()
   if (scheduled < now + INTERVAL) {
     if (time != null && scheduled < time) {
@@ -130,13 +135,52 @@ function showNotification() {
       requireInteraction: true,
     })
     notif.onclick = async (e) => {
-      const block = await logseq.Editor.getBlock(id)
-      logseq.Editor.scrollToBlockInPage(block.uuid)
+      lastItem = item
+      lastID = id
+      openUI(item.msg)
     }
   }
 
   resetTimer()
   scheduleNext()
+}
+
+export function onRemind5() {
+  remindMeIn(5)
+}
+
+export function onRemind10() {
+  remindMeIn(10)
+}
+
+export function onRemind15() {
+  remindMeIn(15)
+}
+
+export function onRemind30() {
+  remindMeIn(30)
+}
+
+function remindMeIn(minutes) {
+  const id = lastID
+  if (id != null) {
+    const item = reminders.get(id)
+    const remindIn = addMinutes(new Date(), minutes)
+    if (item) {
+      item.remindIn = remindIn
+    } else {
+      reminders.set(id, { ...lastItem, remindIn })
+    }
+    dates.push(remindIn.getTime(), id)
+    lastID = null
+    lastItem = null
+    scheduleNext()
+  }
+  closeUI()
+}
+
+export function onClose() {
+  closeUI()
 }
 
 function parseDate(content) {
@@ -168,6 +212,16 @@ function resetTimer() {
   timer = null
   eid = null
   time = null
+}
+
+function openUI(msg) {
+  const msgEl = document.getElementById("msg")
+  msgEl.textContent = msg
+  logseq.showMainUI({ autoFocus: true })
+}
+
+function closeUI() {
+  logseq.hideMainUI({ restoreEditingCursor: true })
 }
 
 intervalTimer = setInterval(scheduleNext, INTERVAL)

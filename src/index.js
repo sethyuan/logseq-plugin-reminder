@@ -1,8 +1,16 @@
 import "@logseq/libs"
 import { format } from "date-fns"
-import { setup } from "logseq-l10n"
+import { setup, t } from "logseq-l10n"
 import zhCN from "./translations/zh-CN.json"
-import { handleReminder, off } from "./worker"
+import {
+  handleReminder,
+  off,
+  onClose,
+  onRemind10,
+  onRemind15,
+  onRemind30,
+  onRemind5,
+} from "./worker"
 
 async function main() {
   await setup({ builtinTranslations: { "zh-CN": zhCN } })
@@ -18,6 +26,22 @@ async function main() {
   //     ),
   //   },
   // ])
+
+  const btn5 = document.getElementById("btn5")
+  const btn10 = document.getElementById("btn10")
+  const btn15 = document.getElementById("btn15")
+  const btn30 = document.getElementById("btn30")
+  const btnClose = document.getElementById("btnClose")
+  btn5.textContent = t("Remind me in 5 minutes")
+  btn10.textContent = t("Remind me in 10 minutes")
+  btn15.textContent = t("Remind me in 15 minutes")
+  btn30.textContent = t("Remind me in 30 minutes")
+  btnClose.textContent = t("Close")
+  btn5.addEventListener("click", onRemind5)
+  btn10.addEventListener("click", onRemind10)
+  btn15.addEventListener("click", onRemind15)
+  btn30.addEventListener("click", onRemind30)
+  btnClose.addEventListener("click", onClose)
 
   const futureReminders = await fetchFutureReminders()
   for (const reminder of futureReminders) {

@@ -7,9 +7,48 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1" />
 	<link rel="icon" href="data:" />
 	{preload}
+	<style>
+		html {
+			height: 100%;
+			font-family: "Inter", "MiSans", "PingFang SC", sans-serif;
+			color: #333;
+		}
+
+		body {
+			height: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background-color: rgba(0 0 0 / 0.75);
+		}
+
+		.container {
+			width: 320px;
+			background-color: #fff;
+			border-radius: 4px;
+			padding: 20px;
+			display: flex;
+			flex-flow: column nowrap;
+		}
+
+		button {
+			display: block;
+			margin-top: 10px;
+			color: #333;
+		}
+
+	</style>
 </head>
 
 <body>
+	<main class="container">
+		<p id="msg"></p>
+		<button id="btn5"></button>
+		<button id="btn10"></button>
+		<button id="btn15"></button>
+		<button id="btn30"></button>
+		<button id="btnClose"></button>
+	</main>
 	{js}
 </body>
 
