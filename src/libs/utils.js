@@ -40,5 +40,8 @@ export async function parseContent(content) {
   // Remove page refs
   content = content.replace(/\[\[([^\]]+)\]\]/g, "$1")
 
+  // Remove task prefix
+  content = content.replace(/^(TODO|DOING|LATER|NOW|DONE) /, "")
+
   return content.trim()
 }
