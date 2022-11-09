@@ -37,7 +37,7 @@ const differenceInUnit = {
 }
 
 const reminders = new Map()
-const dates = new MinPriorityQueue()
+let dates = new MinPriorityQueue()
 let timer = null
 let eid = null
 let time = null
@@ -85,6 +85,19 @@ export async function handleReminder(id, contentOld, contentNew) {
 export function off() {
   clearInterval(intervalTimer)
   clearTimeout(timer)
+}
+
+export function reinit() {
+  clearInterval(intervalTimer)
+  clearTimeout(timer)
+  reminders.clear()
+  dates = new MinPriorityQueue()
+  timer = null
+  eid = null
+  time = null
+  intervalTimer = null
+  lastItem = null
+  lastID = null
 }
 
 function scheduleNext() {

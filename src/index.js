@@ -10,6 +10,7 @@ import {
   onRemind15,
   onRemind30,
   onRemind5,
+  reinit,
 } from "./worker"
 
 async function main() {
@@ -43,10 +44,7 @@ async function main() {
   btn30.addEventListener("click", onRemind30)
   btnClose.addEventListener("click", onClose)
 
-  const futureReminders = await fetchFutureReminders()
-  for (const reminder of futureReminders) {
-    await handleReminder(reminder.id, null, reminder.content)
-  }
+  await initReminders()
 
   const cache = new Map()
   const dbOff = logseq.DB.onChanged(({ txData }) => {
@@ -87,12 +85,25 @@ async function main() {
     cache.clear()
   })
 
+  logseq.App.onCurrentGraphChanged(async () => {
+    reinit()
+    cache.clear()
+    await initReminders()
+  })
+
   logseq.beforeunload(() => {
     off()
     dbOff()
   })
 
   console.log("#reminder loaded")
+}
+
+async function initReminders() {
+  const futureReminders = await fetchFutureReminders()
+  for (const reminder of futureReminders) {
+    await handleReminder(reminder.id, null, reminder.content)
+  }
 }
 
 async function fetchFutureReminders() {
