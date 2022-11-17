@@ -18,6 +18,8 @@ import { MinPriorityQueue } from "jsutils"
 import { t } from "logseq-l10n"
 import { parseContent } from "./libs/utils"
 
+const INTERVAL = 30_000 // 30s
+
 const UNITS = new Set(["y", "m", "w", "d", "h"])
 const addUnit = {
   y: addYears,
@@ -100,7 +102,6 @@ function scheduleNext() {
   const now = Date.now()
   while (
     (item == null ||
-      scheduled < now ||
       (item.remindIn?.getTime() !== scheduled &&
         item.dt.getTime() !== scheduled &&
         nextTime(item.dt, item.repeat) !== scheduled)) &&
@@ -122,9 +123,18 @@ function scheduleNext() {
   if (timer == null) {
     eid = id
     time = scheduled
-    timer = setTimeout(showNotification, scheduled - now)
-    dates.pop()
-    // console.log("scheduling:", item.msg, new Date(scheduled).toString())
+    const span = scheduled - now
+    if (span < INTERVAL) {
+      timer = setTimeout(showNotification, span)
+      dates.pop()
+    } else {
+      // HACK: Effort to make reminder as accurate as possible.
+      timer = setTimeout(() => {
+        resetTimer()
+        scheduleNext()
+      }, INTERVAL)
+    }
+    // console.log("scheduling:", item.msg, new Date(now).toString())
   }
 }
 
