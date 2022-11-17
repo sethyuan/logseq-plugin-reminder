@@ -18,8 +18,6 @@ import { MinPriorityQueue } from "jsutils"
 import { t } from "logseq-l10n"
 import { parseContent } from "./libs/utils"
 
-const INTERVAL = 1000 * 60 * 60 * 24 // 1d
-
 const UNITS = new Set(["y", "m", "w", "d", "h"])
 const addUnit = {
   y: addYears,
@@ -41,7 +39,6 @@ let dates = new MinPriorityQueue()
 let timer = null
 let eid = null
 let time = null
-let intervalTimer = null
 let lastItem = null
 let lastID = null
 
@@ -83,19 +80,16 @@ export async function handleReminder(id, contentOld, contentNew) {
 }
 
 export function off() {
-  clearInterval(intervalTimer)
   clearTimeout(timer)
 }
 
 export function reinit() {
-  clearInterval(intervalTimer)
   clearTimeout(timer)
   reminders.clear()
   dates = new MinPriorityQueue()
   timer = null
   eid = null
   time = null
-  intervalTimer = null
   lastItem = null
   lastID = null
 }
@@ -103,8 +97,10 @@ export function reinit() {
 function scheduleNext() {
   let item = reminders.get(dates.peek())
   let scheduled = dates.peekPriority()
+  const now = Date.now()
   while (
     (item == null ||
+      scheduled < now ||
       (item.remindIn?.getTime() !== scheduled &&
         item.dt.getTime() !== scheduled &&
         nextTime(item.dt, item.repeat) !== scheduled)) &&
@@ -114,21 +110,21 @@ function scheduleNext() {
     item = reminders.get(dates.peek())
     scheduled = dates.peekPriority()
   }
+
+  if (dates.length <= 0) return
+
   const id = dates.peek()
-  const now = Date.now()
-  if (scheduled < now + INTERVAL) {
-    if (time != null && scheduled < time) {
-      clearTimeout(timer)
-      timer = null
-      dates.push(time, eid)
-    }
-    if (timer == null) {
-      eid = id
-      time = scheduled
-      timer = setTimeout(showNotification, scheduled - now)
-      dates.pop()
-      // console.log("scheduling:", item.msg, new Date(scheduled).toString())
-    }
+  if (time != null && scheduled < time) {
+    clearTimeout(timer)
+    timer = null
+    dates.push(time, eid)
+  }
+  if (timer == null) {
+    eid = id
+    time = scheduled
+    timer = setTimeout(showNotification, scheduled - now)
+    dates.pop()
+    // console.log("scheduling:", item.msg, new Date(scheduled).toString())
   }
 }
 
@@ -236,5 +232,3 @@ function openUI(msg) {
 function closeUI() {
   logseq.hideMainUI({ restoreEditingCursor: true })
 }
-
-intervalTimer = setInterval(scheduleNext, INTERVAL)
