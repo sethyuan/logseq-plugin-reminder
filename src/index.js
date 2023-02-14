@@ -109,14 +109,14 @@ async function initReminders() {
 async function fetchFutureReminders() {
   try {
     return (
-      await logseq.DB.datascriptQuery(
+      (await logseq.DB.datascriptQuery(
         `[:find (pull ?b [:db/id :block/content])
         :in $ ?now
         :where
         (or [?b :block/scheduled ?d] [?b :block/deadline ?d])
         (or [?b :block/repeated? true] [(>= ?d ?now)])]`,
         format(new Date(), "yyyyMMdd"),
-      )
+      )) ?? []
     ).flat()
   } catch (err) {
     console.error(err)
