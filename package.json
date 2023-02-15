@@ -1,6 +1,6 @@
 {
   "name": "logseq-plugin-reminder",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "main": "dist/index.html",
   "logseq": {
     "id": "_sethyuan-logseq-reminder",
@@ -11,7 +11,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@logseq/libs": "^0.0.10",
+    "@logseq/libs": "^0.0.14",
     "date-fns": "^2.29.3",
     "jsutils": "^1.11.0",
     "logseq-l10n": "^0.2.0",
