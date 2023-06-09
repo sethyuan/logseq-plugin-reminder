@@ -16,17 +16,16 @@ import {
 async function main() {
   await setup({ builtinTranslations: { "zh-CN": zhCN } })
 
-  // NOTE: Not sure if this default time is a good idea.
-  // logseq.useSettingsSchema([
-  //   {
-  //     key: "defaultTime",
-  //     type: "string",
-  //     default: "09:00",
-  //     description: t(
-  //       "The default time (in 24 hours format) for notification when only a date is given.",
-  //     ),
-  //   },
-  // ])
+  logseq.useSettingsSchema([
+    {
+      key: "alertOffset",
+      type: "number",
+      default: 5,
+      description: t(
+        "Alert n minutes before the event. Use 0 if you don't want to receive alerts before the event.",
+      ),
+    },
+  ])
 
   const btn5 = document.getElementById("btn5")
   const btn10 = document.getElementById("btn10")

@@ -44,6 +44,8 @@ let time = null
 let lastItem = null
 let lastID = null
 
+const DEFAULT_OFFSET = 5
+
 export async function handleReminder(id, contentOld, contentNew) {
   const [dtOld, repeatOld] = parseDate(contentOld)
   const [dtNew, repeatNew] = parseDate(contentNew)
@@ -210,7 +212,13 @@ function parseDate(content) {
   )
   if (!match) return [null, null]
   const [, dateStr, repeat] = match
-  return [parse(dateStr, "yyyy-MM-dd EEE HH:mm", new Date()), repeat]
+  return [
+    addMinutes(
+      parse(dateStr, "yyyy-MM-dd EEE HH:mm", new Date()),
+      -(logseq.settings?.alertOffset ?? DEFAULT_OFFSET),
+    ),
+    repeat,
+  ]
 }
 
 function nextTime(d, repeat) {
