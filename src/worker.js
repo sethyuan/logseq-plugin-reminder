@@ -212,13 +212,16 @@ function parseDate(content) {
   )
   if (!match) return [null, null]
   const [, dateStr, repeat] = match
-  return [
-    addMinutes(
-      parse(dateStr, "yyyy-MM-dd EEE HH:mm", new Date()),
-      -(logseq.settings?.alertOffset ?? DEFAULT_OFFSET),
-    ),
-    repeat,
-  ]
+  const date = parse(dateStr, "yyyy-MM-dd EEE HH:mm", new Date())
+  const offsetDate = addMinutes(
+    date,
+    -(logseq.settings?.alertOffset ?? DEFAULT_OFFSET),
+  )
+  if (offsetDate.getTime() <= Date.now()) {
+    return [date, repeat]
+  } else {
+    return [offsetDate, repeat]
+  }
 }
 
 function nextTime(d, repeat) {
