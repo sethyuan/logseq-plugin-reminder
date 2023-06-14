@@ -31,18 +31,25 @@
 			flex-flow: column nowrap;
 		}
 
+		#openBlockLabel {
+			margin-right: 10px;
+		}
+
 		button {
 			display: block;
 			margin-top: 10px;
 			color: #333;
 		}
-
 	</style>
 </head>
 
 <body>
 	<main class="container">
 		<p id="msg"></p>
+		<div>
+			<input id="openBlock" type="checkbox" checked />
+			<label id="openBlockLabel" for="openBlock"></label>
+		</div>
 		<button id="btn5"></button>
 		<button id="btn10"></button>
 		<button id="btn15"></button>

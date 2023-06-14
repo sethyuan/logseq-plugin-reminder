@@ -27,11 +27,13 @@ async function main() {
     },
   ])
 
+  const openBlockLabel = document.getElementById("openBlockLabel")
   const btn5 = document.getElementById("btn5")
   const btn10 = document.getElementById("btn10")
   const btn15 = document.getElementById("btn15")
   const btn30 = document.getElementById("btn30")
   const btnClose = document.getElementById("btnClose")
+  openBlockLabel.textContent = t("Open triggering block.")
   btn5.textContent = t("Remind me in 5 minutes")
   btn10.textContent = t("Remind me in 10 minutes")
   btn15.textContent = t("Remind me in 15 minutes")

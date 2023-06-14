@@ -158,7 +158,7 @@ function showNotification() {
     notif.onclick = async (e) => {
       lastItem = item
       lastID = id
-      openUI(item.msg)
+      openUI(item.msg, id)
     }
   }
 
@@ -244,12 +244,19 @@ function resetTimer() {
   time = null
 }
 
-function openUI(msg) {
+async function openUI(msg, id) {
   const msgEl = document.getElementById("msg")
+  const openBlock = document.getElementById("openBlock")
   msgEl.textContent = msg
+  const uuid = (await logseq.Editor.getBlock(id))?.uuid
+  openBlock.dataset.uuid = uuid
   logseq.showMainUI({ autoFocus: true })
 }
 
 function closeUI() {
+  const openBlock = document.getElementById("openBlock")
+  if (openBlock.checked) {
+    logseq.Editor.scrollToBlockInPage(openBlock.dataset.uuid)
+  }
   logseq.hideMainUI({ restoreEditingCursor: true })
 }
