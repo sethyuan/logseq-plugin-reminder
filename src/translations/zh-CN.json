@@ -4,9 +4,8 @@
   "Remind me in 10 minutes": "10分钟后再提醒我",
   "Remind me in 15 minutes": "15分钟后再提醒我",
   "Remind me in 30 minutes": "30分钟后再提醒我",
-  "Close dialog": "关闭弹框",
-  "Open Block": "打开块",
+  "Close dialog": "关闭对话框",
   "The default time (in 24 hours format) for notification when only a date is given.": "在只给出日期的情况下采用的默认通知时间（24小时制）。",
   "Alert n minutes before the event. Use 0 if you don't want to receive alerts before the event.": "提前 n 分钟提醒。如果不想收到提前提醒的话请设置为0。",
-  "Open triggering block after selection.": "在选择后打开触发块。"
+  "Close dialog and open the triggering block": "关闭对话框并打开触发块"
 }

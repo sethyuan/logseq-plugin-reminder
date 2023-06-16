@@ -200,6 +200,12 @@ function remindMeIn(minutes) {
   closeUI()
 }
 
+export function onCloseAndOpenBlock() {
+  const btnOpenBlock = document.getElementById("btnCloseAndOpenBlock")
+  logseq.Editor.scrollToBlockInPage(btnOpenBlock.dataset.uuid)
+  closeUI()
+}
+
 export function onClose() {
   closeUI()
 }
@@ -246,17 +252,13 @@ function resetTimer() {
 
 async function openUI(msg, id) {
   const msgEl = document.getElementById("msg")
-  const openBlock = document.getElementById("openBlock")
   msgEl.textContent = msg
   const uuid = (await logseq.Editor.getBlock(id))?.uuid
-  openBlock.dataset.uuid = uuid
+  const btnOpenBlock = document.getElementById("btnCloseAndOpenBlock")
+  btnOpenBlock.dataset.uuid = uuid
   logseq.showMainUI({ autoFocus: true })
 }
 
 function closeUI() {
-  const openBlock = document.getElementById("openBlock")
-  if (openBlock.checked) {
-    logseq.Editor.scrollToBlockInPage(openBlock.dataset.uuid)
-  }
   logseq.hideMainUI({ restoreEditingCursor: true })
 }

@@ -6,6 +6,7 @@ import {
   handleReminder,
   off,
   onClose,
+  onCloseAndOpenBlock,
   onRemind10,
   onRemind15,
   onRemind30,
@@ -27,22 +28,25 @@ async function main() {
     },
   ])
 
-  const openBlockLabel = document.getElementById("openBlockLabel")
   const btn5 = document.getElementById("btn5")
   const btn10 = document.getElementById("btn10")
   const btn15 = document.getElementById("btn15")
   const btn30 = document.getElementById("btn30")
+  const btnCloseAndOpenBlock = document.getElementById("btnCloseAndOpenBlock")
   const btnClose = document.getElementById("btnClose")
-  openBlockLabel.textContent = t("Open triggering block after selection.")
   btn5.textContent = t("Remind me in 5 minutes")
   btn10.textContent = t("Remind me in 10 minutes")
   btn15.textContent = t("Remind me in 15 minutes")
   btn30.textContent = t("Remind me in 30 minutes")
+  btnCloseAndOpenBlock.textContent = t(
+    "Close dialog and open the triggering block",
+  )
   btnClose.textContent = t("Close dialog")
   btn5.addEventListener("click", onRemind5)
   btn10.addEventListener("click", onRemind10)
   btn15.addEventListener("click", onRemind15)
   btn30.addEventListener("click", onRemind30)
+  btnCloseAndOpenBlock.addEventListener("click", onCloseAndOpenBlock)
   btnClose.addEventListener("click", onClose)
 
   await initReminders()
