@@ -58,17 +58,29 @@ export async function handleReminder(id, contentOld, contentNew) {
       if (!item) return
       item.msg = await parseContent(contentNew)
     } else {
-      if (!repeatNew && isBefore(dtNew, new Date())) return
       if (eid === id) {
         resetTimer()
       }
+      const now = new Date()
+      if (!repeatNew && isBefore(dtNew, now)) return
       reminders.set(id, {
         msg: await parseContent(contentNew),
         dt: dtNew,
         repeat: repeatNew,
       })
-      if (isBefore(dtNew, new Date())) {
-        dates.push(nextTime(dtNew, repeatNew), id)
+      const notifDts = getNotificationDates(id, dtNew)
+      for (const dt of notifDts) {
+        if (isBefore(dt, now)) continue
+        dates.push(dt.getTime(), id)
+      }
+      if (isBefore(dtNew, now)) {
+        const nextDt = nextTime(dtNew, repeatNew)
+        const nextNotifDts = getNotificationDates(id, nextDt)
+        for (const dt of nextNotifDts) {
+          if (isBefore(dt, now)) continue
+          dates.push(dt.getTime(), id)
+        }
+        dates.push(nextDt.getTime(), id)
       } else {
         dates.push(dtNew.getTime(), id)
       }
@@ -99,19 +111,24 @@ export function reinit() {
 }
 
 function scheduleNext() {
-  let item = reminders.get(dates.peek())
+  let itemId = dates.peek()
+  let item = reminders.get(itemId)
   let scheduled = dates.peekPriority()
-  const now = Date.now()
+  let dts = [...getNotificationDates(itemId, item.dt), item.dt].map((dt) =>
+    dt.getTime(),
+  )
   while (
+    dates.length > 0 &&
     (item == null ||
-      (item.remindIn?.getTime() !== scheduled &&
-        item.dt.getTime() !== scheduled &&
-        nextTime(item.dt, item.repeat) !== scheduled)) &&
-    dates.length > 0
+      (scheduled !== item.remindIn?.getTime() && !dts.includes(scheduled)))
   ) {
     dates.pop()
-    item = reminders.get(dates.peek())
+    itemId = dates.peek()
+    item = reminders.get()
     scheduled = dates.peekPriority()
+    dts = [...getNotificationDates(itemId, item.dt), item.dt].map((dt) =>
+      dt.getTime(),
+    )
   }
 
   if (dates.length <= 0) return
@@ -123,6 +140,7 @@ function scheduleNext() {
     dates.push(time, eid)
   }
   if (timer == null) {
+    const now = Date.now()
     eid = id
     time = scheduled
     const span = scheduled - now
@@ -145,11 +163,21 @@ function showNotification() {
   const item = reminders.get(id)
 
   if (item != null) {
-    if (item.repeat) {
-      const newTime = nextTime(item.dt, item.repeat)
-      dates.push(newTime, id)
-    } else {
-      reminders.delete(id)
+    // Only add more if it's on event time.
+    if (time === item.dt.getTime()) {
+      if (item.repeat) {
+        const nextDt = nextTime(item.dt, item.repeat)
+        item.dt = nextDt
+        const nextNotifDts = getNotificationDates(id, nextDt)
+        const now = new Date()
+        for (const dt of nextNotifDts) {
+          if (isBefore(dt, now)) continue
+          dates.push(dt, id)
+        }
+        dates.push(nextDt, id)
+      } else {
+        reminders.delete(id)
+      }
     }
     const notif = new Notification(t("Reminder"), {
       body: item.msg,
@@ -201,12 +229,24 @@ function remindMeIn(minutes) {
 }
 
 export function onCloseAndOpenBlock() {
+  // Set remindIn so existing ones get invalidated.
+  const item = reminders.get(lastID)
+  if (item) {
+    item.remindIn = new Date()
+  }
+
   const btnOpenBlock = document.getElementById("btnCloseAndOpenBlock")
   logseq.Editor.scrollToBlockInPage(btnOpenBlock.dataset.uuid)
   closeUI()
 }
 
 export function onClose() {
+  // Set remindIn so existing ones get invalidated.
+  const item = reminders.get(lastID)
+  if (item) {
+    item.remindIn = new Date()
+  }
+
   closeUI()
 }
 
@@ -219,15 +259,16 @@ function parseDate(content) {
   if (!match) return [null, null]
   const [, dateStr, repeat] = match
   const date = parse(dateStr, "yyyy-MM-dd EEE HH:mm", new Date())
-  const offsetDate = addMinutes(
-    date,
+  return [date, repeat]
+}
+
+function getNotificationDates(id, dt) {
+  // TODO: read config
+  const offset = addMinutes(
+    dt,
     -(logseq.settings?.alertOffset ?? DEFAULT_OFFSET),
   )
-  if (offsetDate.getTime() <= Date.now()) {
-    return [date, repeat]
-  } else {
-    return [offsetDate, repeat]
-  }
+  return [offset]
 }
 
 function nextTime(d, repeat) {
