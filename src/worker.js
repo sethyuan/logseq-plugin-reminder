@@ -16,7 +16,7 @@ import {
 } from "date-fns"
 import { MinPriorityQueue } from "jsutils"
 import { t } from "logseq-l10n"
-import { parseContent } from "./libs/utils"
+import { parseContent, parseRemindings } from "./libs/utils"
 
 const INTERVAL = 30_000 // 30s
 
@@ -34,6 +34,12 @@ const differenceInUnit = {
   w: differenceInWeeks,
   d: differenceInDays,
   h: differenceInHours,
+}
+
+const addRemindingUnit = {
+  d: addDays,
+  h: addHours,
+  m: addMinutes,
 }
 
 const reminders = new Map()
@@ -114,9 +120,12 @@ function scheduleNext() {
   let itemId = dates.peek()
   let item = reminders.get(itemId)
   let scheduled = dates.peekPriority()
-  let dts = [...getNotificationDates(itemId, item.dt), item.dt].map((dt) =>
-    dt.getTime(),
-  )
+  let dts =
+    item == null
+      ? []
+      : [...getNotificationDates(itemId, item.dt), item.dt].map((dt) =>
+          dt.getTime(),
+        )
   while (
     dates.length > 0 &&
     (item == null ||
@@ -124,11 +133,14 @@ function scheduleNext() {
   ) {
     dates.pop()
     itemId = dates.peek()
-    item = reminders.get()
+    item = reminders.get(itemId)
     scheduled = dates.peekPriority()
-    dts = [...getNotificationDates(itemId, item.dt), item.dt].map((dt) =>
-      dt.getTime(),
-    )
+    dts =
+      item == null
+        ? []
+        : [...getNotificationDates(itemId, item.dt), item.dt].map((dt) =>
+            dt.getTime(),
+          )
   }
 
   if (dates.length <= 0) return
@@ -175,7 +187,7 @@ function showNotification() {
           dates.push(dt, id)
         }
         dates.push(nextDt, id)
-      } else {
+      } else if (item.remindIn == null || item.remindIn.getTime() <= time) {
         reminders.delete(id)
       }
     }
@@ -263,12 +275,11 @@ function parseDate(content) {
 }
 
 function getNotificationDates(id, dt) {
-  // TODO: read config
-  const offset = addMinutes(
-    dt,
-    -(logseq.settings?.alertOffset ?? DEFAULT_OFFSET),
+  const remindings = parseRemindings()
+  const ret = remindings.map(([quantity, unit]) =>
+    addRemindingUnit[unit](dt, -quantity),
   )
-  return [offset]
+  return ret
 }
 
 function nextTime(d, repeat) {

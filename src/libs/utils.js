@@ -45,3 +45,13 @@ export async function parseContent(content) {
 
   return content.trim()
 }
+
+export function parseRemindings() {
+  const remindings = (logseq.settings?.remindings ?? "")
+    .split(/,\s*/)
+    .map((s) => [+s.substring(0, s.length - 1), s.substring(s.length - 1)])
+    .filter(
+      ([quantity, unit]) => quantity > 0 && ["m", "h", "d"].includes(unit),
+    )
+  return remindings
+}

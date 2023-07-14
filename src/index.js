@@ -19,11 +19,11 @@ async function main() {
 
   logseq.useSettingsSchema([
     {
-      key: "alertOffset",
-      type: "number",
-      default: 5,
+      key: "remindings",
+      type: "string",
+      default: "15m, 5m",
       description: t(
-        "Alert n minutes before the event. Use 0 if you don't want to receive alerts before the event.",
+        "Comma separated times for remindings before the event. Units m (minutes), h (hours) and d (days) are supported.",
       ),
     },
   ])
