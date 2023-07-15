@@ -1,3 +1,4 @@
+import { format } from "date-fns"
 import { parse } from "./marked-renderer.js"
 
 export async function parseContent(content) {
@@ -60,4 +61,12 @@ export async function parseRemindings(id) {
       ([quantity, unit]) => quantity > 0 && ["m", "h", "d"].includes(unit),
     )
   return remindings
+}
+
+export async function getDisplayedMessage(msg, dt) {
+  return `${await parseContent(msg)}\n${
+    logseq.settings?.dateTimeFormat
+      ? format(dt, logseq.settings?.dateTimeFormat)
+      : dt.toLocaleString()
+  }`
 }

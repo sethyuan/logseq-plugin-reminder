@@ -26,6 +26,14 @@ async function main() {
         "Comma separated times for remindings before the event. Units m (minutes), h (hours) and d (days) are supported.",
       ),
     },
+    {
+      key: "dateTimeFormat",
+      type: "string",
+      default: "",
+      description: t(
+        "You can provide a customized date time format. Refer to: https://date-fns.org/v2.29.2/docs/format",
+      ),
+    },
   ])
 
   const btn5 = document.getElementById("btn5")

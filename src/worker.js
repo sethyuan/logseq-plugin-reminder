@@ -16,7 +16,7 @@ import {
 } from "date-fns"
 import { MinPriorityQueue } from "jsutils"
 import { t } from "logseq-l10n"
-import { parseContent, parseRemindings } from "./libs/utils"
+import { getDisplayedMessage, parseRemindings } from "./libs/utils"
 
 const INTERVAL = 30_000 // 30s
 
@@ -62,7 +62,7 @@ export async function handleReminder(id, contentOld, contentNew) {
     if (isEqual(dtOld, dtNew) && repeatOld === repeatNew) {
       const item = reminders.get(id)
       if (!item) return
-      item.msg = await parseContent(contentNew)
+      item.msg = await getDisplayedMessage(contentNew, dtNew)
     } else {
       if (eid === id) {
         resetTimer()
@@ -70,7 +70,7 @@ export async function handleReminder(id, contentOld, contentNew) {
       const now = new Date()
       if (!repeatNew && isBefore(dtNew, now)) return
       reminders.set(id, {
-        msg: await parseContent(contentNew),
+        msg: await getDisplayedMessage(contentNew, dtNew),
         dt: dtNew,
         repeat: repeatNew,
       })
