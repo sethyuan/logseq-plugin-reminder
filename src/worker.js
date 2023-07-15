@@ -74,14 +74,14 @@ export async function handleReminder(id, contentOld, contentNew) {
         dt: dtNew,
         repeat: repeatNew,
       })
-      const notifDts = getNotificationDates(id, dtNew)
+      const notifDts = await getNotificationDates(id, dtNew)
       for (const dt of notifDts) {
         if (isBefore(dt, now)) continue
         dates.push(dt.getTime(), id)
       }
       if (isBefore(dtNew, now)) {
         const nextDt = nextTime(dtNew, repeatNew)
-        const nextNotifDts = getNotificationDates(id, nextDt)
+        const nextNotifDts = await getNotificationDates(id, nextDt)
         for (const dt of nextNotifDts) {
           if (isBefore(dt, now)) continue
           dates.push(dt.getTime(), id)
@@ -98,7 +98,7 @@ export async function handleReminder(id, contentOld, contentNew) {
     reminders.delete(id)
   }
 
-  scheduleNext()
+  await scheduleNext()
 }
 
 export function off() {
@@ -116,14 +116,14 @@ export function reinit() {
   lastID = null
 }
 
-function scheduleNext() {
+async function scheduleNext() {
   let itemId = dates.peek()
   let item = reminders.get(itemId)
   let scheduled = dates.peekPriority()
   let dts =
     item == null
       ? []
-      : [...getNotificationDates(itemId, item.dt), item.dt].map((dt) =>
+      : [...(await getNotificationDates(itemId, item.dt)), item.dt].map((dt) =>
           dt.getTime(),
         )
   while (
@@ -138,8 +138,8 @@ function scheduleNext() {
     dts =
       item == null
         ? []
-        : [...getNotificationDates(itemId, item.dt), item.dt].map((dt) =>
-            dt.getTime(),
+        : [...(await getNotificationDates(itemId, item.dt)), item.dt].map(
+            (dt) => dt.getTime(),
           )
   }
 
@@ -161,16 +161,16 @@ function scheduleNext() {
       dates.pop()
     } else {
       // HACK: Effort to make reminder as accurate as possible.
-      timer = setTimeout(() => {
+      timer = setTimeout(async () => {
         resetTimer()
-        scheduleNext()
+        await scheduleNext()
       }, INTERVAL)
     }
     // console.log("scheduling:", item.msg, new Date(now).toString())
   }
 }
 
-function showNotification() {
+async function showNotification() {
   const id = eid
   const item = reminders.get(id)
 
@@ -180,7 +180,7 @@ function showNotification() {
       if (item.repeat) {
         const nextDt = nextTime(item.dt, item.repeat)
         item.dt = nextDt
-        const nextNotifDts = getNotificationDates(id, nextDt)
+        const nextNotifDts = await getNotificationDates(id, nextDt)
         const now = new Date()
         for (const dt of nextNotifDts) {
           if (isBefore(dt, now)) continue
@@ -203,26 +203,26 @@ function showNotification() {
   }
 
   resetTimer()
-  scheduleNext()
+  await scheduleNext()
 }
 
-export function onRemind5() {
-  remindMeIn(5)
+export async function onRemind5() {
+  await remindMeIn(5)
 }
 
-export function onRemind10() {
-  remindMeIn(10)
+export async function onRemind10() {
+  await remindMeIn(10)
 }
 
-export function onRemind15() {
-  remindMeIn(15)
+export async function onRemind15() {
+  await remindMeIn(15)
 }
 
-export function onRemind30() {
-  remindMeIn(30)
+export async function onRemind30() {
+  await remindMeIn(30)
 }
 
-function remindMeIn(minutes) {
+async function remindMeIn(minutes) {
   const id = lastID
   if (id != null) {
     const item = reminders.get(id)
@@ -235,7 +235,7 @@ function remindMeIn(minutes) {
     dates.push(remindIn.getTime(), id)
     lastID = null
     lastItem = null
-    scheduleNext()
+    await scheduleNext()
   }
   closeUI()
 }
@@ -274,8 +274,8 @@ function parseDate(content) {
   return [date, repeat]
 }
 
-function getNotificationDates(id, dt) {
-  const remindings = parseRemindings()
+async function getNotificationDates(id, dt) {
+  const remindings = await parseRemindings(id)
   const ret = remindings.map(([quantity, unit]) =>
     addRemindingUnit[unit](dt, -quantity),
   )

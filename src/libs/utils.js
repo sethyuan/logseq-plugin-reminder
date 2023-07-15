@@ -46,8 +46,14 @@ export async function parseContent(content) {
   return content.trim()
 }
 
-export function parseRemindings() {
-  const remindings = (logseq.settings?.remindings ?? "")
+export async function parseRemindings(id) {
+  const block = await logseq.Editor.getBlock(id)
+  if (block == null) return []
+  const remindingsStr =
+    block.properties?.remindings ?? logseq.settings?.remindings
+  if (!remindingsStr) return []
+
+  const remindings = remindingsStr
     .split(/,\s*/)
     .map((s) => [+s.substring(0, s.length - 1), s.substring(s.length - 1)])
     .filter(
