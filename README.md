@@ -10,6 +10,7 @@ Scheduled 与 Deadline 的系统级通知。
 - 支持 `Scheduled` 和 `Deadline` 上的重复。
 - 没有设置时间的 `Scheduled` 或 `Deadline` 不会收到通知。
 - 支持点击通知后设置再次提醒。
+- 可设置多次提前提醒，块级设置（通过 `remindings` 属性）会优先于插件级设置。
 
 ## 注意
 
