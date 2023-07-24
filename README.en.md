@@ -20,8 +20,8 @@ Write an user function in Logseq, give it a `#.fn` tag. Set a `reminder-hook` at
 ````
 ```js
 async function blockToWeChat(block, notification) {
+  const title = getBlockTitle(block)
   const body = await getBlockContent(block)
-  const title = content.substring(0, 32)
 
   // Push notification to WeChat.
   await pushWeChat("here is your Server酱 key", title, body)
@@ -43,6 +43,7 @@ With the above block we set up a hook that will call the `blockToWeChat` user fu
 
 In addition, the plugin provides the following built-in helper functions:
 
+- `getBlockTitle(block)` for getting the block title.
 - `getBlockContent(block)` for getting the block content.
 - `pushWeChat(key, title, body)`, to use Server 酱 to do push to WeChat, you need to go to [Server 酱](https://sct.ftqq.com/) to open your own account, and pass in your own key. `title` is the title, 32 characters maximum, `body` is the body content, supports normal markdown, max 32KB.
 

@@ -20,8 +20,8 @@ Scheduled 与 Deadline 的系统级通知。
 ````
 ```js
 async function blockToWeChat(block, notification) {
+  const title = getBlockTitle(block)
   const body = await getBlockContent(block)
-  const title = content.substring(0, 32)
 
   // Push notification to WeChat.
   await pushWeChat("here is your Server酱 key", title, body)
@@ -43,6 +43,7 @@ reminder-hook:: blockToWeChat
 
 此外，插件内置提供了以下辅助函数：
 
+- `getBlockTitle(block)`，用于获取块标题。
 - `getBlockContent(block)`，用于获取块内容。
 - `pushWeChat(key, title, body)`，使用 Server 酱向微信做推送，你需要去[Server 酱](https://sct.ftqq.com/)开个自己的账号，把自己的 key 传进来。`title` 是标题，最长 32 个字符，`body` 是正文内容，支持普通 markdown，最长 32KB。
 

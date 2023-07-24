@@ -1,3 +1,5 @@
+import { parse } from "./marked-renderer.js"
+
 window.pushWeChat = async (key, title, markdownBody) => {
   try {
     const formData = new URLSearchParams()
@@ -29,4 +31,22 @@ window.getBlockContent = async (block) => {
   content = content.replace(/\b[^:\n]+:: [^\n]+/g, "")
 
   return content.trim()
+}
+
+window.getBlockTitle = (block) => {
+  let content = block.content
+  if (!content) return content
+
+  // Use only the first line.
+  content = content.match(/.*/)[0]
+
+  // Remove macro renderers.
+  content = content.replace(/ \{\{renderer (?:\}[^\}]|[^\}])+\}\}/g, "")
+
+  // Handle markdown.
+  content = parse(content)
+
+  content = content.replace("'", "")
+
+  return content.trim().substring(0, 32)
 }
