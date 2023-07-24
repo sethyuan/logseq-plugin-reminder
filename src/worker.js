@@ -175,6 +175,16 @@ async function showNotification() {
   const item = reminders.get(id)
 
   if (item != null) {
+    const notif = new Notification(t("Reminder"), {
+      body: item.msg,
+      requireInteraction: true,
+    })
+    notif.onclick = async (e) => {
+      lastItem = item
+      lastID = id
+      openUI(item.msg, id)
+    }
+
     // Only add more if it's on event time.
     if (time === item.dt.getTime()) {
       if (item.repeat) {
@@ -190,15 +200,8 @@ async function showNotification() {
       } else if (item.remindIn == null || item.remindIn.getTime() <= time) {
         reminders.delete(id)
       }
-    }
-    const notif = new Notification(t("Reminder"), {
-      body: item.msg,
-      requireInteraction: true,
-    })
-    notif.onclick = async (e) => {
-      lastItem = item
-      lastID = id
-      openUI(item.msg, id)
+
+      callHooks(id, item)
     }
   }
 
@@ -313,4 +316,15 @@ async function openUI(msg, id) {
 
 function closeUI() {
   logseq.hideMainUI({ restoreEditingCursor: true })
+}
+
+async function callHooks(id, item) {
+  const block = await logseq.Editor.getBlock(id)
+  if (block == null) return
+  const hookProp = block.properties?.reminderHook
+  if (hookProp == null) return
+
+  // HACK: Do not remove this line. It prevents `item` from being removed.
+  console.log("reminder", item)
+  await eval(`${hookProp}(block, item)`)
 }

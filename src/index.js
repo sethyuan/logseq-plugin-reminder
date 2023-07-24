@@ -1,6 +1,7 @@
 import "@logseq/libs"
 import { format } from "date-fns"
 import { setup, t } from "logseq-l10n"
+import "./libs/fns"
 import zhCN from "./translations/zh-CN.json"
 import {
   handleReminder,
@@ -13,6 +14,8 @@ import {
   onRemind5,
   reinit,
 } from "./worker"
+
+const evaluate = eval
 
 async function main() {
   await setup({ builtinTranslations: { "zh-CN": zhCN } })
@@ -109,6 +112,19 @@ async function main() {
     dbOff()
   })
 
+  logseq.App.registerCommandPalette(
+    {
+      key: "reload-user-fns",
+      label: t("Reload user functions"),
+    },
+    async () => {
+      await reloadUserFns()
+      await logseq.UI.showMsg(t("User defined functions reloaded."))
+    },
+  )
+
+  await reloadUserFns()
+
   console.log("#reminder loaded")
 }
 
@@ -135,6 +151,21 @@ async function fetchFutureReminders() {
     console.error(err)
   }
   return []
+}
+
+async function reloadUserFns() {
+  const fnStrings = (
+    (await logseq.DB.datascriptQuery(
+      `[:find (pull ?b [:block/content])
+      :where
+      [?t :block/name ".fn"]
+      [?b :block/refs ?t]]`,
+    )) ?? []
+  ).map((item) => item[0].content.match(/```.+\n((?:.|\n)+)\n```/)[1])
+
+  for (const fnStr of fnStrings) {
+    evaluate(fnStr)
+  }
 }
 
 logseq.ready(main).catch(console.error)

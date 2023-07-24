@@ -9,5 +9,7 @@
   "Alert n minutes before the event. Use 0 if you don't want to receive alerts before the event.": "提前 n 分钟提醒。如果不想收到提前提醒的话请设置为0。",
   "Close dialog and open the triggering block": "关闭对话框并打开触发块",
   "Comma separated times for remindings before the event. Units m (minutes), h (hours) and d (days) are supported.": "用逗号分隔的多个提醒提前量。单位支持 m（分钟），h（小时）和 d（天）。",
-  "You can provide a customized date time format. Refer to: https://date-fns.org/v2.29.2/docs/format": "你可以指定日期的格式。参见: https://date-fns.org/v2.29.2/docs/format"
+  "You can provide a customized date time format. Refer to: https://date-fns.org/v2.29.2/docs/format": "你可以指定日期的格式。参见: https://date-fns.org/v2.29.2/docs/format",
+  "Reload user functions": "重新加载用户函数",
+  "User defined functions reloaded.": "用户函数已重新加载。"
 }
