@@ -286,16 +286,16 @@ async function getNotificationDates(id, dt) {
 }
 
 function nextTime(d, repeat) {
-  if (!repeat) return d.getTime()
+  if (!repeat) return d
 
   const quantity = +repeat.substring(0, repeat.length - 1)
   const unit = repeat[repeat.length - 1]
-  if (isNaN(quantity) || !UNITS.has(unit)) return d.getTime()
+  if (isNaN(quantity) || !UNITS.has(unit)) return d
 
   const diff = differenceInUnit[unit](new Date(), d)
   const times = (diff / quantity) >> 0
   d = addUnit[unit](d, quantity * (times + 1))
-  return d.getTime()
+  return d
 }
 
 function resetTimer() {
