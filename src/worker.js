@@ -62,25 +62,29 @@ export async function handleReminder(id, contentOld, contentNew) {
     if (isEqual(dtOld, dtNew) && repeatOld === repeatNew) {
       const item = reminders.get(id)
       if (!item) return
-      item.msg = await getDisplayedMessage(contentNew, dtNew)
+      item.msg = contentNew
     } else {
       if (eid === id) {
         resetTimer()
       }
       const now = new Date()
       if (!repeatNew && isBefore(dtNew, now)) return
-      reminders.set(id, {
-        msg: await getDisplayedMessage(contentNew, dtNew),
+
+      const item = {
+        msg: contentNew,
         dt: dtNew,
         repeat: repeatNew,
-      })
+      }
+      reminders.set(id, item)
       const notifDts = await getNotificationDates(id, dtNew)
       for (const dt of notifDts) {
         if (isBefore(dt, now)) continue
         dates.push(dt.getTime(), id)
       }
+
       if (isBefore(dtNew, now)) {
         const nextDt = nextTime(dtNew, repeatNew)
+        item.dt = nextDt
         const nextNotifDts = await getNotificationDates(id, nextDt)
         for (const dt of nextNotifDts) {
           if (isBefore(dt, now)) continue
@@ -145,7 +149,6 @@ async function scheduleNext() {
 
   if (dates.length <= 0) return
 
-  const id = dates.peek()
   if (time != null && scheduled < time) {
     clearTimeout(timer)
     timer = null
@@ -153,10 +156,10 @@ async function scheduleNext() {
   }
   if (timer == null) {
     const now = Date.now()
-    eid = id
+    eid = itemId
     time = scheduled
     const span = scheduled - now
-    if (span < INTERVAL) {
+    if (span <= INTERVAL) {
       timer = setTimeout(showNotification, span)
       dates.pop()
     } else {
@@ -175,14 +178,15 @@ async function showNotification() {
   const item = reminders.get(id)
 
   if (item != null) {
+    const msg = await getDisplayedMessage(item.msg, item.dt)
     const notif = new Notification(t("Reminder"), {
-      body: item.msg,
+      body: msg,
       requireInteraction: true,
     })
     notif.onclick = async (e) => {
       lastItem = item
       lastID = id
-      openUI(item.msg, id)
+      openUI(msg, id)
     }
 
     // Only add more if it's on event time.
@@ -194,9 +198,9 @@ async function showNotification() {
         const now = new Date()
         for (const dt of nextNotifDts) {
           if (isBefore(dt, now)) continue
-          dates.push(dt, id)
+          dates.push(dt.getTime(), id)
         }
-        dates.push(nextDt, id)
+        dates.push(nextDt.getTime(), id)
       } else if (item.remindIn == null || item.remindIn.getTime() <= time) {
         reminders.delete(id)
       }
