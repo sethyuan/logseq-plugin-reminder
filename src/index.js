@@ -37,6 +37,22 @@ async function main() {
         "You can provide a customized date time format. Refer to: https://date-fns.org/v2.29.2/docs/format",
       ),
     },
+    {
+      key: "hasDefaultReminding",
+      type: "boolean",
+      default: false,
+      description: t(
+        "Whether you want to enable a default reminding time for SCHEDULED and DEADLINEs without a specific time.",
+      ),
+    },
+    {
+      key: "defaultRemindingTime",
+      type: "string",
+      default: "08:00",
+      description: t(
+        "Reminding time in 24-hour system for SCHEDULED and DEADLINEs without a specific time. You also have to enable 'hasDefaultReminding' for this to work.",
+      ),
+    },
   ])
 
   const btn5 = document.getElementById("btn5")

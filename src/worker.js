@@ -12,6 +12,7 @@ import {
   differenceInYears,
   isBefore,
   isEqual,
+  isValid,
   parse,
 } from "date-fns"
 import { MinPriorityQueue } from "jsutils"
@@ -54,7 +55,7 @@ const DEFAULT_OFFSET = 5
 
 export async function handleReminder(id, contentOld, contentNew) {
   const [dtOld, repeatOld] = parseDate(contentOld)
-  const [dtNew, repeatNew] = parseDate(contentNew)
+  const [dtNew, repeatNew] = parseDate(contentNew, true)
 
   if (!dtOld && !dtNew) return
 
@@ -269,13 +270,24 @@ export function onClose() {
   closeUI()
 }
 
-function parseDate(content) {
+function parseDate(content, useDefault = false) {
   // sample: \nSCHEDULED: <2022-11-07 Mon 23:18 .+1d>
   if (!content) return [null, null]
   const match = content.match(
     /\n\s*(?:SCHEDULED|DEADLINE): \<(\d{4}-\d{1,2}-\d{1,2} [a-z]{3} \d{1,2}:\d{1,2})(?: [\.\+]\+(\d+[ymwdh]))?\>/i,
   )
-  if (!match) return [null, null]
+  if (!match) {
+    if (useDefault && logseq.settings?.hasDefaultReminding) {
+      const dt = parse(
+        logseq.settings?.defaultRemindingTime,
+        "HH:mm",
+        new Date(),
+      )
+      return [isValid(dt) ? dt : null, null]
+    } else {
+      return [null, null]
+    }
+  }
   const [, dateStr, repeat] = match
   const date = parse(dateStr, "yyyy-MM-dd EEE HH:mm", new Date())
   return [date, repeat]
