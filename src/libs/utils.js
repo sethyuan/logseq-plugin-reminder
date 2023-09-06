@@ -58,10 +58,13 @@ export async function parseRemindings(id) {
   return remindings
 }
 
-export async function getDisplayedMessage(msg, dt) {
-  return `${await parseContent(msg)}\n${
-    logseq.settings?.dateTimeFormat
-      ? format(dt, logseq.settings?.dateTimeFormat)
-      : dt.toLocaleString()
-  }`
+export async function getDisplayedMessage(msg, dt, noTime) {
+  const content = await parseContent(msg)
+  return noTime
+    ? content
+    : `${content}\n${
+        logseq.settings?.dateTimeFormat
+          ? format(dt, logseq.settings?.dateTimeFormat)
+          : dt.toLocaleString()
+      }`
 }

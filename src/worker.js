@@ -55,7 +55,7 @@ const DEFAULT_OFFSET = 5
 
 export async function handleReminder(id, contentOld, contentNew) {
   const [dtOld, repeatOld] = parseDate(contentOld)
-  const [dtNew, repeatNew] = parseDate(contentNew, true)
+  const [dtNew, repeatNew, hasNoTime] = parseDate(contentNew, true)
 
   if (!dtOld && !dtNew) return
 
@@ -73,6 +73,7 @@ export async function handleReminder(id, contentOld, contentNew) {
 
       const item = {
         msg: contentNew,
+        noTime: hasNoTime,
         dt: dtNew,
         repeat: repeatNew,
       }
@@ -179,7 +180,7 @@ async function showNotification() {
   const item = reminders.get(id)
 
   if (item != null) {
-    const msg = await getDisplayedMessage(item.msg, item.dt)
+    const msg = await getDisplayedMessage(item.msg, item.dt, item.noTime)
     const notif = new Notification(t("Reminder"), {
       body: msg,
       requireInteraction: true,
@@ -272,25 +273,24 @@ export function onClose() {
 
 function parseDate(content, useDefault = false) {
   // sample: \nSCHEDULED: <2022-11-07 Mon 23:18 .+1d>
-  if (!content) return [null, null]
+  if (!content) return [null, null, false]
+
   const match = content.match(
-    /\n\s*(?:SCHEDULED|DEADLINE): \<(\d{4}-\d{1,2}-\d{1,2} [a-z]{3} \d{1,2}:\d{1,2})(?: [\.\+]\+(\d+[ymwdh]))?\>/i,
+    /\n\s*(?:SCHEDULED|DEADLINE): \<(\d{4}-\d{1,2}-\d{1,2} [a-z]{3}(?: (\d{1,2}:\d{1,2}))?)(?: [\.\+]\+(\d+[ymwdh]))?\>/i,
   )
-  if (!match) {
-    if (useDefault && logseq.settings?.hasDefaultReminding) {
-      const dt = parse(
-        logseq.settings?.defaultRemindingTime,
-        "HH:mm",
-        new Date(),
-      )
-      return [isValid(dt) ? dt : null, null]
-    } else {
-      return [null, null]
-    }
+  if (!match) return [null, null, false]
+
+  const [, dateStr, timeStr, repeat] = match
+  if (timeStr) {
+    const date = parse(dateStr, "yyyy-MM-dd EEE HH:mm", new Date())
+    return [date, repeat, false]
+  } else if (useDefault && logseq.settings?.hasDefaultReminding) {
+    const date = parse(dateStr, "yyyy-MM-dd EEE", new Date())
+    const dt = parse(logseq.settings?.defaultRemindingTime, "HH:mm", date)
+    return [isValid(dt) ? dt : null, repeat, true]
+  } else {
+    return [null, null, false]
   }
-  const [, dateStr, repeat] = match
-  const date = parse(dateStr, "yyyy-MM-dd EEE HH:mm", new Date())
-  return [date, repeat]
 }
 
 async function getNotificationDates(id, dt) {

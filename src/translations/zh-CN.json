@@ -12,6 +12,6 @@
   "You can provide a customized date time format. Refer to: https://date-fns.org/v2.29.2/docs/format": "你可以指定日期的格式。参见: https://date-fns.org/v2.29.2/docs/format",
   "Reload user functions": "重新加载用户函数",
   "User defined functions reloaded.": "用户函数已重新加载。",
-  "Whether you want to enable a default reminding time for SCHEDULED and DEADLINEs without a specific time.": "是否想要针对没有指定时间的 SCHEDULED 和 DEADLINE 开启默认提醒时间。",
-  "Reminding time in 24-hour system for SCHEDULED and DEADLINEs without a specific time. You also have to enable 'hasDefaultReminding' for this to work.": "为没有指定时间的 SCHEDULED 和 DEADLINE 设置的提醒时间（24小时制）。'hasDefaultReminding' 必须也要开启。"
+  "Enable a default reminding time for SCHEDULED and DEADLINE without time.": "是否想要针对没有指定时间的 SCHEDULED 和 DEADLINE 开启默认提醒时间。",
+  "Default reminding time (in 24-hour format) for SCHEDULED and DEADLINE without time.": "为没有指定时间的 SCHEDULED 和 DEADLINE 设置的提醒时间（24小时制）。"
 }

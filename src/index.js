@@ -42,7 +42,7 @@ async function main() {
       type: "boolean",
       default: false,
       description: t(
-        "Whether you want to enable a default reminding time for SCHEDULED and DEADLINEs without a specific time.",
+        "Enable a default reminding time for SCHEDULED and DEADLINE without time.",
       ),
     },
     {
@@ -50,7 +50,7 @@ async function main() {
       type: "string",
       default: "08:00",
       description: t(
-        "Reminding time in 24-hour system for SCHEDULED and DEADLINEs without a specific time. You also have to enable 'hasDefaultReminding' for this to work.",
+        "Default reminding time (in 24-hour format) for SCHEDULED and DEADLINE without time.",
       ),
     },
   ])

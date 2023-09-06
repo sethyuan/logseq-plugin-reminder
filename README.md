@@ -8,10 +8,11 @@ Scheduled 与 Deadline 的系统级通知。
 
 - 支持 Logseq 内置的 `Scheduled` 和 `Deadline`。
 - 支持 `Scheduled` 和 `Deadline` 上的重复。
-- 没有设置时间的 `Scheduled` 或 `Deadline` 不会收到通知。
+- 可为没有设置时间的 `Scheduled` 或 `Deadline` 设置默认通知时间。
 - 支持点击通知后设置再次提醒。
 - 可设置多次提前提醒，块级设置（通过 `remindings` 属性）会优先于插件级设置。
 - 可设置 hook，提醒时间到时会自动触发 hook 函数的调用。
+- 修改插件配置后请重启 Logseq。
 
 ## 如何使用 Hook
 

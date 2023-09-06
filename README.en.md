@@ -8,10 +8,11 @@ System notification for Scheduled and Deadline.
 
 - Support Logseq's builtin `Scheduled` and `Deadline`.
 - Support the repeater on `Scheduled` and `Deadline`.
-- No notification will be received for `Scheduled` and `Deadline` that has no time set.
+- You can set a default reminding time for `Scheduled` and `Deadline` that has no time set.
 - Support for reminding again when clicked on the notification.
 - You can setup multiple remindings prior the event, block level setting (via `remindings` property) has priority over the plugin level setting.
 - A hook function can be set on the block, it gets called on the scheduled time.
+- You need to restart Logseq after changing the settings.
 
 ## How to use Hooks
 
