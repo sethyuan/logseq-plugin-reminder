@@ -294,6 +294,9 @@ function parseDate(content, useDefault = false) {
 }
 
 async function getNotificationDates(id, dt) {
+  const item = reminders.get(id)
+  if (item?.noTime) return []
+
   const remindings = await parseRemindings(id)
   const ret = remindings.map(([quantity, unit]) =>
     addRemindingUnit[unit](dt, -quantity),
