@@ -176,10 +176,13 @@ async function scheduleNext() {
 }
 
 async function showNotification() {
-  const id = eid
-  const item = reminders.get(id)
+  try {
+    const id = eid
+    const item = reminders.get(id)
+    if (item == null) return
+    const block = await logseq.Editor.getBlock(id)
+    if (["DONE", "CANCELED"].includes(block?.marker)) return
 
-  if (item != null) {
     const msg = await getDisplayedMessage(item.msg, item.dt, item.noTime)
     const notif = new Notification(t("Reminder"), {
       body: msg,
@@ -209,10 +212,10 @@ async function showNotification() {
 
       callHooks(id, item)
     }
+  } finally {
+    resetTimer()
+    await scheduleNext()
   }
-
-  resetTimer()
-  await scheduleNext()
 }
 
 export async function onRemind5() {
