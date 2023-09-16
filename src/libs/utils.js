@@ -12,7 +12,10 @@ export async function parseContent(content) {
   content = content.replace(/ \{\{renderer (?:\}[^\}]|[^\}])+\}\}/g, "")
 
   // Remove properties.
-  content = content.replace(/\b[^:\n]+:: [^\n]+/g, "")
+  content = content.replace(/^.+:: .+$/gm, "")
+
+  // Remove logbook
+  content = content.replace(/:LOGBOOK:(.|\n)+:END:/g, "")
 
   // Handle markdown.
   content = parse(content)
