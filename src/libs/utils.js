@@ -21,7 +21,10 @@ export async function parseContent(content) {
   content = parse(content)
 
   // Remove tags.
-  content = content.replace(/(?:^|\s)#\S+/g, "")
+  content = content.replace(
+    /(^|\s)#(?!#)((\[\[([^\]]|\](?!\]))+\]\])|\S+)/g,
+    "",
+  )
 
   // Replace block refs with their content.
   let match
@@ -40,7 +43,10 @@ export async function parseContent(content) {
   content = content.replace(/\[\[([^\]]+)\]\]/g, "$1")
 
   // Remove task prefix
-  content = content.replace(/^(TODO|DOING|LATER|NOW|DONE) /, "")
+  content = content.replace(
+    /^(TODO|DOING|LATER|NOW|DONE|CANCELED|WAITING) /,
+    "",
+  )
 
   return content.trim()
 }
