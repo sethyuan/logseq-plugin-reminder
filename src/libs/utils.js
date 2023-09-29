@@ -44,7 +44,7 @@ export async function parseContent(content) {
 
   // Remove task prefix
   content = content.replace(
-    /^(TODO|DOING|LATER|NOW|DONE|CANCELED|WAITING) /,
+    /^(TODO|DOING|LATER|NOW|DONE|CANCEL{1,2}ED|WAITING) /,
     "",
   )
 

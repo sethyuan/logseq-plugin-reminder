@@ -181,7 +181,7 @@ async function showNotification() {
     const item = reminders.get(id)
     if (item == null) return
     const block = await logseq.Editor.getBlock(id)
-    if (["DONE", "CANCELED"].includes(block?.marker)) return
+    if (["DONE", "CANCELED", "CANCELLED"].includes(block?.marker)) return
 
     const msg = await getDisplayedMessage(item.msg, item.dt, item.noTime)
     const notif = new Notification(t("Reminder"), {
