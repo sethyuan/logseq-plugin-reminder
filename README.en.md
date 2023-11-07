@@ -14,6 +14,10 @@ System notification for Scheduled and Deadline.
 - A hook function can be set on the block, it gets called on the scheduled time.
 - You need to restart Logseq after changing the settings.
 
+## Linux
+
+For Linux users, please refer to [this](https://github.com/sethyuan/logseq-plugin-reminder/issues/2#issuecomment-1613315698) for how to setup for system level notifications.
+
 ## How to use Hooks
 
 Write an user function in Logseq, give it a `#.fn` tag. Set a `reminder-hook` attribute in the Scheduled/Deadline block to tell the plugin to call this function, see the following example:
