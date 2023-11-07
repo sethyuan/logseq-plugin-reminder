@@ -14,6 +14,10 @@ Scheduled 与 Deadline 的系统级通知。
 - 可设置 hook，提醒时间到时会自动触发 hook 函数的调用。
 - 修改插件配置后请重启 Logseq。
 
+## Linux
+
+Linux 用户，系统级别的通知设置请参考[这里](https://github.com/sethyuan/logseq-plugin-reminder/issues/2#issuecomment-1613315698)。
+
 ## 如何使用 Hook
 
 在 Logseq 中编写一个自定义函数，给它一个 `#.fn` 的标签。在 Scheduled/Deadline 块中设置一个`reminder-hook`属性来告诉插件调用这个函数，见如下示例：
