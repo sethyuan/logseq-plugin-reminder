@@ -82,8 +82,8 @@ async function main() {
   const dbOff = logseq.DB.onChanged(({ txData }) => {
     for (const [e, a, v, , isAdded] of txData) {
       switch (a) {
-        case "scheduled":
-        case "deadline": {
+        case "block/scheduled":
+        case "block/deadline": {
           const item = cache.get(e)
           if (item) {
             item.check = true
@@ -92,7 +92,7 @@ async function main() {
           }
           break
         }
-        case "content": {
+        case "block/content": {
           const item = cache.get(e)
           if (item) {
             if (isAdded) {
