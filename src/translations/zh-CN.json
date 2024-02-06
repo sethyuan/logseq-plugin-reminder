@@ -13,5 +13,6 @@
   "Reload user functions": "重新加载用户函数",
   "User defined functions reloaded.": "用户函数已重新加载。",
   "Enable a default reminding time for SCHEDULED and DEADLINE without time.": "是否想要针对没有指定时间的 SCHEDULED 和 DEADLINE 开启默认提醒时间。",
-  "Default reminding time (in 24-hour format) for SCHEDULED and DEADLINE without time.": "为没有指定时间的 SCHEDULED 和 DEADLINE 设置的提醒时间（24小时制）。"
+  "Default reminding time (in 24-hour format) for SCHEDULED and DEADLINE without time.": "为没有指定时间的 SCHEDULED 和 DEADLINE 设置的提醒时间（24小时制）。",
+  "Whether or not to display the graph name in the notification message.": "是否在通知消息中显示所属的graph名。"
 }

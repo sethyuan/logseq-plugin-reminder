@@ -69,11 +69,16 @@ export async function parseRemindings(id) {
 
 export async function getDisplayedMessage(msg, dt, noTime) {
   const content = await parseContent(msg)
-  return noTime
+  let ret = noTime
     ? content
     : `${content}\n${
         logseq.settings?.dateTimeFormat
           ? format(dt, logseq.settings?.dateTimeFormat)
           : dt.toLocaleString()
       }`
+  if (logseq.settings?.showGraphName) {
+    const graphInfo = await logseq.App.getCurrentGraph()
+    ret = `${ret}\n${graphInfo.name}`
+  }
+  return ret
 }

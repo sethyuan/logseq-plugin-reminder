@@ -53,6 +53,14 @@ async function main() {
         "Default reminding time (in 24-hour format) for SCHEDULED and DEADLINE without time.",
       ),
     },
+    {
+      key: "showGraphName",
+      type: "boolean",
+      default: false,
+      description: t(
+        "Whether or not to display the graph name in the notification message.",
+      ),
+    },
   ])
 
   const btn5 = document.getElementById("btn5")
