@@ -78,7 +78,7 @@ export async function getDisplayedMessage(msg, dt, noTime) {
       }`
   if (logseq.settings?.showGraphName) {
     const graphInfo = await logseq.App.getCurrentGraph()
-    ret = `${ret}\n${graphInfo.name}`
+    ret = `${graphInfo.name}\n${ret}`
   }
   return ret
 }
